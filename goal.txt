@@ -1,0 +1,5 @@
+The goal of this project is to create an interactive web app for creating workout plans based on
+an exercise data base. It hall follow the main principles of workout principles and support the user with
+the creation.
+A user must be able to save his current plan and modify it.
+A user must be able to track his weights.

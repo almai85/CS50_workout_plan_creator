@@ -1,0 +1,11 @@
+.navbar-brand {
+    color: #FFFFFF;
+    font-weight: 900;
+    font-family: "Courier New", monospace;
+    font-size: 2em;
+    padding-left: 0.3em;
+}
+
+.nav-item-right {
+    color: #FFFFFF;
+}
