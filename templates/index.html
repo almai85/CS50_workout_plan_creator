@@ -2,7 +2,7 @@
 
 {% block body %}
     <div class="row" style="min-height: 500px;">
-        <div class="col-md-3 border-end border-dark bg-primary">
+        <div class="col-lg-2 border-end border-dark bg-primary">
             <div class="container pt-5">
                 <div class="container leading-text">
                     Here is the muscles worked table
@@ -34,46 +34,48 @@
                 
             </div>
         </div>
-        <div class="col-md-9 bg-light">
+        <div class="col-lg-10 bg-light">
             <div class="container pt-5">
                 <div class="container leading-text">
                     This is the leading text to the workout generator table
                 </div>
                 <div class="container pt-2">
-                    <table class="table table-hover table-striped border">
+                    <table class="text-center table table-hover table-striped border" id="workout-table">
                         <thead>
                         <tr>
-                            <th>Firstname</th>
-                            <th>Lastname</th>
-                            <th>Email</th>
+                            <th>Exercise</th>
+                            <th>Muscle(s) worked</th>
+                            <th>Warm up sets</th>
+                            <th>Working sets</th>
+                            <th>Reps</th>
+                            <th>Progression scheme</th>
+                            <th>Video Link</th>
+                            <th>Delete row</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>
-                                <form action="/action_page.php">
-                                  <select class="form-select" id="sel1" name="sellist1">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                  </select>
-                                </form></td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                        </tr>
+                            <tr draggable="true">
+                                <td>
+                                    <form action="/action_page.php">
+                                    <select class="form-select" id="sel1" name="sellist1">
+                                        <option>Bench Press</option>
+                                        <option>Deadlifts</option>
+                                        <option>Squats</option>
+                                        <option>Overhead Press</option>
+                                    </select>
+                                    </form>
+                                </td>
+                                <td>Biceps</td>
+                                <td>2</td>
+                                <td>4</td>
+                                <td>6-8</td>
+                                <td>Linear progression</td>
+                                <td><a href="https://youtu.be/bEv6CCg2BC8?si=MqfxOisM7fd2ptcY">Link</a></td>
+                                <td><button class="btn btn-danger">Delete</button></td>
+                            </tr>
                         </tbody>
                     </table>
+                    <button onclick="addRowToTable()">Add exercise</button>
                 </div>
             </div>
         </div>  
