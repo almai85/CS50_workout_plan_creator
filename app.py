@@ -1,10 +1,15 @@
 from flask import Flask, render_template, jsonify
+from db_helper import create_muscle_set
 
+# configure Flask app
 app = Flask(__name__)
+
+# query DB for muscles
+muscle_set = create_muscle_set()
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", muscle_set=muscle_set)
 
 @app.route("/test")
 def test():
@@ -22,3 +27,5 @@ def get_progression():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+# SQL-Abfrage nach Muskel: SELECT * FROM exercises WHERE muscles LIKE '%biceps%';

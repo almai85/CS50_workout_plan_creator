@@ -8,7 +8,7 @@
                     Here is the muscles worked table
                 </div>
                 <div class="container pt-2">
-                    <table class="table table-hover table-stripped table-dark text-center">
+                    <table class="table table-hover table-stripped table-dark text-center" id="muscles_table">
                         <thead>
                             <tr>
                                 <th>Muscle</th>
@@ -16,18 +16,12 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for muscle in muscle_set %}
                             <tr>
-                                <td>Pecs</td>
-                                <td class="bg-success">1</td>
+                                <td>{{muscle}}</td>
+                                <td>0</td>
                             </tr>
-                            <tr>
-                                <td>Quads</td>
-                                <td class="bg-warning">5</td>
-                            </tr>
-                            <tr>
-                                <td>Quads</td>
-                                <td class="bg-danger">5</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
