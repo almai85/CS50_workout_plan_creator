@@ -7,7 +7,7 @@ cur = con.cursor()
 def create_muscle_set():
     """This function querries the DB for the muscles and exports a set of unique muscles for populationg the muscles table"""
     muscle_set = set()
-    # querying database
+    # querying database for muscles
     muscles = cur.execute("SELECT muscles from exercises")
     for exercise_rows in muscles.fetchall():
         for muscle in exercise_rows:
@@ -17,3 +17,11 @@ def create_muscle_set():
                 if current_muscle != '':
                     muscle_set.update([current_muscle])
     return muscle_set
+
+def create_exercises_list():
+    exercise_list = []
+    """This function querries the DB for the exercises"""
+    exercises = cur.execute("SELECT exercise FROM exercises").fetchall()
+    for exercise in exercises:
+        exercise_list.append(exercise[0])
+    return exercise_list
