@@ -17,7 +17,7 @@ async function addRowToTable() {
     var cell9 = newRow.insertCell(8);
     // Dropdown-Menü für Exercises erstellen und Optionen vom Server laden
     var muscle_filter = document.createElement('select');
-    muscle_filter.className = "form-select";
+    muscle_filter.className = "form-select muscle-filter";
     muscle_filter.id = 'dropdown_muscle_filter' + (table.rows.length - 1);  // Eindeutige ID für jedes Dropdown
     var select_exercise = document.createElement('select');
     select_exercise.className = "form-select";
@@ -70,6 +70,10 @@ async function addRowToTable() {
         const response = await fetch('/get_muscles');
         const options = await response.json();
         const selectElement = document.getElementById(selectId);
+        let optionElement = document.createElement('option');
+        optionElement.textContent = '-';
+        optionElement.value = '-';
+        selectElement.appendChild(optionElement);        
         options.forEach(option => {
             let optionElement = document.createElement('option');
             optionElement.textContent = option;
@@ -79,11 +83,40 @@ async function addRowToTable() {
     }
 }
 
+// Funktion, um die Exercise-Auswahl zu aktualisieren, wenn sich der Filter-Wert beim Muskel ändert
+async function updateOptionsForSelect(selectElement, muscle) {
+    try {
+        const response = await fetch(`/get_exercises?muscle=${encodeURIComponent(muscle)}`);
+        const options = await response.json();
+        selectElement.innerHTML = ''; // Alte Optionen entfernen
+        options.forEach(option => {
+            let optionElement = document.createElement('option');
+            optionElement.textContent = option;
+            optionElement.value = option;
+            selectElement.appendChild(optionElement);
+        });
+    } catch (error) {
+        console.error('Failed to fetch options:', error);
+        // Optional: Benutzer über das Problem informieren
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Event-Listener für die Tabelle hinzufügen
     var table = document.getElementById('workout-table');
     var draggedRow = null;
 
+    // Prüfen, ob sich der Filter-Wert geändert hat
+    table.addEventListener('change', function(event) {
+        if (event.target.tagName === 'SELECT' && event.target.classList.contains("muscle-filter")) {
+            console.log("Wert hat sich geändert")
+            const muscle = event.target.value;
+            const row = event.target.closest('tr');
+            const selectInColumn2 = row.cells[1].querySelector('select');
+            updateOptionsForSelect(selectInColumn2, muscle);
+        }
+    });
+    
     table.addEventListener('click', function(event) {
         // Prüfen, ob das geklickte Element ein Button ist
         var target = event.target;

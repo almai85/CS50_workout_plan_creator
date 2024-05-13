@@ -26,11 +26,19 @@ def get_exercises():
     """Returns json of all exercises in DB if no request parameter is given,
     returns json of relevant exercises if parameter 'muscle' is provided"""
     exercises = exercises_list
-    if request.args.get('muscle'):
+    print(list(exercises_dict.values()))
+    print(request.args.get('muscle'))
+    if request.args.get('muscle') and request.args.get('muscle') != "-":
         print(f"Request for {request.args.get('muscle')} received")
         muscles_list = list(exercises_dict.values())
         exercises = list(exercises_dict.keys())
-        exercises_indexes = [i for i in range(0, len(muscles_list)) if request.args.get('muscle') in muscles_list[i]]
+        exercises_indexes = []
+        for i in range(0, len(muscles_list)):
+            current_muscles = muscles_list[i]
+            for muscle in current_muscles:
+                if request.args.get('muscle').lower() == muscle.strip().lower():
+                    exercises_indexes.append(i)
+        # exercises_indexes = [i for i in range(0, len(muscles_list)) if request.args.get('muscle') in muscles_list[i]]
         searched_exercises = [exercises[i] for i in exercises_indexes]
         return jsonify(searched_exercises)
     return jsonify(exercises)
