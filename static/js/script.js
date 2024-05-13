@@ -14,7 +14,11 @@ async function addRowToTable() {
     var cell6 = newRow.insertCell(5);
     var cell7 = newRow.insertCell(6);
     var cell8 = newRow.insertCell(7);
+    var cell9 = newRow.insertCell(8);
     // Dropdown-Menü für Exercises erstellen und Optionen vom Server laden
+    var muscle_filter = document.createElement('select');
+    muscle_filter.className = "form-select";
+    muscle_filter.id = 'dropdown_muscle_filter' + (table.rows.length - 1);  // Eindeutige ID für jedes Dropdown
     var select_exercise = document.createElement('select');
     select_exercise.className = "form-select";
     select_exercise.id = 'dropdown_exercise' + (table.rows.length - 1);  // Eindeutige ID für jedes Dropdown
@@ -22,16 +26,18 @@ async function addRowToTable() {
     select_progression.className = "form-select";
     select_progression.id = 'dropdown_progression' + (table.rows.length - 1);  // Eindeutige ID für jedes Dropdown
     // Inhalt zu den Zellen hinzufügen
-    cell1.appendChild(select_exercise);
+    cell1.appendChild(muscle_filter);
+    loadMuscleFilter(muscle_filter.id);
+    cell2.appendChild(select_exercise);
     loadExerciseOptions(select_exercise.id);
-    cell2.innerHTML = "Quads";
-    cell3.innerHTML = "1";
-    cell4.innerHTML = "3";
-    cell5.innerHTML = "11";
-    cell6.appendChild(select_progression)
+    cell3.innerHTML = "Quads";
+    cell4.innerHTML = "1";
+    cell5.innerHTML = "3";
+    cell6.innerHTML = "11";
+    cell7.appendChild(select_progression)
     loadProgressionOptions(select_progression.id)
-    cell7.innerHTML = '<a href="https://youtu.be/bEv6CCg2BC8?si=MqfxOisM7fd2ptcY">Link</a>';
-    cell8.innerHTML = '<td><button class="btn btn-danger">Delete</button></td>'
+    cell8.innerHTML = '<a href="https://youtu.be/bEv6CCg2BC8?si=MqfxOisM7fd2ptcY">Link</a>';
+    cell9.innerHTML = '<td><button class="btn btn-danger">Delete</button></td>'
 
     // Funktion zum Laden der Übungen aus dem Flask-Backend
     async function loadExerciseOptions(selectId) {
@@ -49,6 +55,19 @@ async function addRowToTable() {
     // Funktion zum Laden des Progression-Schemas aus dem Flask-Backend
     async function loadProgressionOptions(selectId) {
         const response = await fetch('/get_progression');
+        const options = await response.json();
+        const selectElement = document.getElementById(selectId);
+        options.forEach(option => {
+            let optionElement = document.createElement('option');
+            optionElement.textContent = option;
+            optionElement.value = option;
+            selectElement.appendChild(optionElement);
+        });
+    }
+
+    // Funktion zum Laden der Muskeln aus dem Backend
+    async function loadMuscleFilter(selectId) {
+        const response = await fetch('/get_muscles');
         const options = await response.json();
         const selectElement = document.getElementById(selectId);
         options.forEach(option => {

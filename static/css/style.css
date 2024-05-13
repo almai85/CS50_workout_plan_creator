@@ -1,3 +1,7 @@
+#workout-table {
+    font-size: 0.8em;
+}
+
 .navbar-brand {
     color: #FFFFFF;
     font-weight: 900;
@@ -8,4 +12,10 @@
 
 .nav-item-right {
     color: #FFFFFF;
+}
+
+.form-select {
+    font-size: 0.8em; 
+    min-width: 12em;
+    max-width: 15em;
 }

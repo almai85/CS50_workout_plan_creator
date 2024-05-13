@@ -34,9 +34,10 @@
                     This is the leading text to the workout generator table
                 </div>
                 <div class="container pt-2">
-                    <table class="text-center table table-hover table-striped border" id="workout-table">
+                    <table class="text-center table table-hover table-striped border small-text" id="workout-table">
                         <thead>
                         <tr>
+                            <th>Filter</th>
                             <th>Exercise</th>
                             <th>Muscle(s) worked</th>
                             <th>Warm up sets</th>
@@ -49,6 +50,15 @@
                         </thead>
                         <tbody>
                             <tr draggable="true">
+                                <td>
+                                    <select class="form-select" id="sel1" name="sellist1">
+                                        <option>Biceps</option>
+                                        <option>Triceps</option>
+                                        <option>Pecs</option>
+                                        <option>Quads</option>
+                                    </select>
+                                    </form>
+                                </td>
                                 <td>
                                     <select class="form-select" id="sel1" name="sellist1">
                                         <option>Bench Press</option>

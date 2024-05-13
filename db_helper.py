@@ -4,6 +4,7 @@ import sqlite3
 con = sqlite3.connect("workoutDB.db")
 cur = con.cursor()
 
+
 def create_muscle_set():
     """This function querries the DB for the muscles and exports a set of unique muscles for populationg the muscles table"""
     muscle_set = set()
@@ -18,10 +19,12 @@ def create_muscle_set():
                     muscle_set.update([current_muscle])
     return muscle_set
 
-def create_exercises_list():
-    exercise_list = []
-    """This function querries the DB for the exercises"""
-    exercises = cur.execute("SELECT exercise FROM exercises").fetchall()
-    for exercise in exercises:
-        exercise_list.append(exercise[0])
-    return exercise_list
+
+def create_exercises_dict():
+    """This function queries the DB for exercises and muscles worked and returns a dictionary with
+    the exerise as key and the muscles worked in this exercise as values"""
+    db_response = cur.execute("SELECT exercise, muscles FROM exercises").fetchall()
+    exercises_dict = {}
+    for row in db_response:
+        exercises_dict[row[0]] = row[-1].split(",")
+    return exercises_dict
