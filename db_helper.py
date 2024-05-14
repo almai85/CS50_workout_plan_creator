@@ -28,3 +28,13 @@ def create_exercises_dict():
     for row in db_response:
         exercises_dict[row[0]] = row[-1].split(",")
     return exercises_dict
+
+
+def create_video_dict():
+    """This function queries the DB for a tutorial video of exercises and provides a dictionary with the exercise as key and the
+    video link as value"""
+    db_response = cur.execute("SELECT exercise, video FROM exercises").fetchall()
+    video_dict = {}
+    for row in db_response:
+        video_dict[row[0]] = row[-1]
+    return video_dict

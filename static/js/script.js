@@ -20,8 +20,8 @@ async function addRowToTable() {
     muscle_filter.className = "form-select muscle-filter";
     muscle_filter.id = 'dropdown_muscle_filter' + (table.rows.length - 1);  // Eindeutige ID für jedes Dropdown
     var select_exercise = document.createElement('select');
-    select_exercise.className = "form-select";
-    select_exercise.id = 'dropdown_exercise' + (table.rows.length - 1);  // Eindeutige ID für jedes Dropdown
+    select_exercise.className = "form-select dropdown_exercise";
+    select_exercise.id = 'dropdown_exercise' + (table.rows.length - 1);  // Eindeutige ID für jedes Dropdown   
     var select_progression = document.createElement('select');
     select_progression.className = "form-select";
     select_progression.id = 'dropdown_progression' + (table.rows.length - 1);  // Eindeutige ID für jedes Dropdown
@@ -30,13 +30,13 @@ async function addRowToTable() {
     loadMuscleFilter(muscle_filter.id);
     cell2.appendChild(select_exercise);
     loadExerciseOptions(select_exercise.id);
-    cell3.innerHTML = "Quads";
-    cell4.innerHTML = "1";
-    cell5.innerHTML = "3";
-    cell6.innerHTML = "11";
+    cell3.innerHTML = '<p>-</p>';
+    cell4.innerHTML = '<input class="form-control form-control-sm" type="number" autocomplete="off" placeholder="0" min="0">';
+    cell5.innerHTML = '<input class="form-control form-control-sm" type="number" autocomplete="off" placeholder="0" min="0">';
+    cell6.innerHTML = '<input class="form-control form-control-sm rep-input" type="text" autocomplete="off" placeholder="0 - 0">';
     cell7.appendChild(select_progression)
     loadProgressionOptions(select_progression.id)
-    cell8.innerHTML = '<a href="https://youtu.be/bEv6CCg2BC8?si=MqfxOisM7fd2ptcY">Link</a>';
+    cell8.innerHTML = '<a>-</a>';
     cell9.innerHTML = '<td><button class="btn btn-danger">Delete</button></td>'
 
     // Funktion zum Laden der Übungen aus dem Flask-Backend
@@ -44,6 +44,12 @@ async function addRowToTable() {
         const response = await fetch('/get_exercises');
         const options = await response.json();
         const selectElement = document.getElementById(selectId);
+        
+        let optionElement = document.createElement('option');
+        optionElement.textContent = '-';
+        optionElement.value = '-';
+        selectElement.appendChild(optionElement);
+
         options.forEach(option => {
             let optionElement = document.createElement('option');
             optionElement.textContent = option;
@@ -84,7 +90,7 @@ async function addRowToTable() {
 }
 
 // Funktion, um die Exercise-Auswahl zu aktualisieren, wenn sich der Filter-Wert beim Muskel ändert
-async function updateOptionsForSelect(selectElement, muscle) {
+async function updateOptionsForSelect(selectElement, selectElement2, selectElement8, muscle) {
     try {
         const response = await fetch(`/get_exercises?muscle=${encodeURIComponent(muscle)}`);
         const options = await response.json();
@@ -95,28 +101,72 @@ async function updateOptionsForSelect(selectElement, muscle) {
             optionElement.value = option;
             selectElement.appendChild(optionElement);
         });
+        exercise = selectElement.value;
+        updateMusclesWorked(selectElement2, exercise);
+        loadVideoLink(selectElement8, exercise);
     } catch (error) {
         console.error('Failed to fetch options:', error);
         // Optional: Benutzer über das Problem informieren
     }
 }
 
+// Funktion, um die Muskeln zu laden, welche durch eine Übung angesteuert werden
+async function updateMusclesWorked(pElement, exercise) {
+    try {
+        const response = await fetch(`/get_muscles?exercise=${encodeURIComponent(exercise)}`);
+        const musclesWorked = await response.json();
+        pElement.innerHTML = musclesWorked; // Text einfügen
+    } catch (error) {
+        console.error('Failed to fetch text:', error);
+        // Optional: Benutzer über das Problem informieren
+    }
+}
+
+// Funktion, um das den Link zum Tutorial-Video der Übung zu laden
+async function loadVideoLink(aElement, exercise) {
+    try {
+        const response = await fetch(`/get_video?exercise=${encodeURIComponent(exercise)}`);
+        const tutorialVideo = await response.json();
+        aElement.innerHtml = 'Link';
+        aElement.textContent = 'Link';
+        aElement.href = tutorialVideo;
+    } catch (error) {
+        console.error('Failed to fetch text:', error);
+        // Optional: Benutzer über das Problem informieren
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Event-Listener für die Tabelle hinzufügen
     var table = document.getElementById('workout-table');
     var draggedRow = null;
 
+    // Prüfen, ob sich der Wert der Exercise geändert hat
+    table.addEventListener('change', function(event) {
+        if (event.target.tagName === 'SELECT' && event.target.classList.contains("dropdown_exercise")) {
+            const exercise = event.target.value;
+            const row = event.target.closest('tr');
+            const selectInColumn3 = row.cells[2].querySelector('p');
+            const selectInColumn8 = row.cells[7].querySelector('a');
+            updateMusclesWorked(selectInColumn3, exercise);
+            loadVideoLink(selectInColumn8, exercise);
+        }
+    });
+
     // Prüfen, ob sich der Filter-Wert geändert hat
     table.addEventListener('change', function(event) {
         if (event.target.tagName === 'SELECT' && event.target.classList.contains("muscle-filter")) {
-            console.log("Wert hat sich geändert")
             const muscle = event.target.value;
             const row = event.target.closest('tr');
             const selectInColumn2 = row.cells[1].querySelector('select');
-            updateOptionsForSelect(selectInColumn2, muscle);
+            const selectInColumn3 = row.cells[2].querySelector('p');
+            const selectInColumn8 = row.cells[7].querySelector('a');
+            updateOptionsForSelect(selectInColumn2, selectInColumn3, selectInColumn8,muscle);
         }
     });
     
+    // Trigger, eine Reihe in der Tabelle zu löschen
     table.addEventListener('click', function(event) {
         // Prüfen, ob das geklickte Element ein Button ist
         var target = event.target;
@@ -128,17 +178,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Trigger und Funktion, die Zeilen der Tabelle zu verschieben
     table.addEventListener('dragstart', function (event) {
         // Die zu verschiebende Zeile markieren
         draggedRow = event.target.closest('tr');
         event.dataTransfer.effectAllowed = 'move';
     });
-
     table.addEventListener('dragover', function (event) {
         // Standardverhalten verhindern, um Drop zu ermöglichen
         event.preventDefault();
     });
-
     table.addEventListener('drop', function (event) {
         event.preventDefault();
         // Ermitteln, wo die Zeile abgelegt wird
@@ -153,7 +202,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-
     function compareDocumentPosition(a, b) {
         return a.compareDocumentPosition(b);
     }

@@ -1,11 +1,12 @@
 from flask import Flask, render_template, jsonify, request
-from db_helper import create_muscle_set, create_exercises_dict
+from db_helper import create_muscle_set, create_exercises_dict, create_video_dict
 
 # configure Flask app
 app = Flask(__name__)
 
 
 # query DB for muscles and exercises
+video_dict = create_video_dict()
 exercises_dict = create_exercises_dict()
 exercises_list = list(exercises_dict.keys())
 muscle_set = create_muscle_set()
@@ -26,8 +27,6 @@ def get_exercises():
     """Returns json of all exercises in DB if no request parameter is given,
     returns json of relevant exercises if parameter 'muscle' is provided"""
     exercises = exercises_list
-    print(list(exercises_dict.values()))
-    print(request.args.get('muscle'))
     if request.args.get('muscle') and request.args.get('muscle') != "-":
         print(f"Request for {request.args.get('muscle')} received")
         muscles_list = list(exercises_dict.values())
@@ -52,7 +51,23 @@ def get_progression():
 
 @app.route("/get_muscles")
 def get_muscles():
+    if request.args.get('exercise'):
+        try:
+            return jsonify(exercises_dict[request.args.get('exercise')])
+        except KeyError:
+            return jsonify(['-'])
     return jsonify(list(muscle_set))
+
+
+@app.route("/get_video")
+def get_video():
+    if request.args.get('exercise'):
+
+        try:
+            return jsonify(video_dict[request.args.get('exercise')])
+        except KeyError:
+            return jsonify(['https://www.google.com'])
+    return jsonify(['https://www.google.com'])
 
 
 if __name__ == "__main__":
