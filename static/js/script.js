@@ -1,4 +1,8 @@
 async function addRowToTable() {
+    
+    
+    getSetsPerMuscle()
+    
     // Hizufügen von einer neuen Reihe in die Workout-Table; Aufruf durch Ereignisse
     // Zugriff auf die Tabelle über ihre ID
     var table = document.getElementById("workout-table");
@@ -31,8 +35,8 @@ async function addRowToTable() {
     cell2.appendChild(select_exercise);
     loadExerciseOptions(select_exercise.id);
     cell3.innerHTML = '<p>-</p>';
-    cell4.innerHTML = '<input class="form-control form-control-sm" type="number" autocomplete="off" placeholder="0" min="0">';
-    cell5.innerHTML = '<input class="form-control form-control-sm" type="number" autocomplete="off" placeholder="0" min="0">';
+    cell4.innerHTML = '<input class="form-control form-control-sm" type="number" autocomplete="off" placeholder="0" min="0" value="0">';
+    cell5.innerHTML = '<input class="form-control form-control-sm working-sets" type="number" autocomplete="off" placeholder="0" min="0" value="0">';
     cell6.innerHTML = '<input class="form-control form-control-sm rep-input" type="text" autocomplete="off" placeholder="0 - 0">';
     cell7.appendChild(select_progression)
     loadProgressionOptions(select_progression.id)
@@ -122,6 +126,46 @@ async function updateMusclesWorked(pElement, exercise) {
     }
 }
 
+// Funktion, um Sets pro Muskel des aktuellen Workouts zu laden
+async function getSetsPerMuscle() {
+    var muscles_table = document.getElementById('muscles_table');
+    var workout_table = document.getElementById('workout-table');
+    var exercise_json = {};
+    for (var i = 1, row; row = workout_table.rows[i]; i++) {
+        try {
+            var exercise = row.cells[1].querySelector(".dropdown_exercise").value;
+            var reps = parseInt(row.cells[4].querySelector(".working-sets").value);
+            if (exercise_json[exercise]) {
+                exercise_json[exercise] = exercise_json[exercise] + reps;
+                console.log("Exercise exists in JSON")
+            } else {
+                exercise_json[exercise] = reps;
+            }
+
+        } catch (error) {
+            console.error('Failed to fetch exercise from dropdown')
+        }
+    }
+    console.log(exercise_json);
+    try {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "/get_setspermuscle", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = JSON.parse(xhr.responseText);
+                // console.log(response);
+            }
+        };
+        var data = JSON.stringify(exercise_json);
+        xhr.send(data)
+
+    } catch (error) {
+        console.error('Failed to fetch text:', error);
+    }
+
+}
+
 // Funktion, um das den Link zum Tutorial-Video der Übung zu laden
 async function loadVideoLink(aElement, exercise) {
     try {
@@ -151,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectInColumn8 = row.cells[7].querySelector('a');
             updateMusclesWorked(selectInColumn3, exercise);
             loadVideoLink(selectInColumn8, exercise);
+            getSetsPerMuscle();
         }
     });
 
@@ -163,6 +208,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectInColumn3 = row.cells[2].querySelector('p');
             const selectInColumn8 = row.cells[7].querySelector('a');
             updateOptionsForSelect(selectInColumn2, selectInColumn3, selectInColumn8,muscle);
+            getSetsPerMuscle();
+        }
+    });
+
+    // Prüfen, ob sich die Anzahl der Working-Sets geändert hat und Funktion zum Ändern der Sets pro Muskel Tabelle aufrufen
+    table.addEventListener('change', function(event) {
+        if (event.target.tagName == 'INPUT' && event.target.classList.contains("working-sets")) {
+            getSetsPerMuscle();
         }
     });
     

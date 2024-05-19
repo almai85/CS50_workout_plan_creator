@@ -7,8 +7,8 @@
                 <div class="container leading-text">
                     Here is the muscles worked table
                 </div>
-                <div class="container pt-2">
-                    <table class="table table-hover table-stripped table-dark text-center" id="muscles_table">
+                <div class="container">
+                    <table class="table table-hover table-stripped table-dark text-center p-0" id="muscles_table">
                         <thead>
                             <tr>
                                 <th>Muscle</th>
@@ -19,7 +19,7 @@
                             {% for muscle in muscle_set %}
                             <tr>
                                 <td>{{muscle}}</td>
-                                <td>0</td>
+                                <td>{{ muscle_set[muscle] }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="col-lg-10 bg-light ps-0">
-            <div class="container pt-5 ps-0">
+            <div class="container pt-5 ps-0 pb-5">
                 <div class="container leading-text">
                     This is the leading text to the workout generator table
                 </div>
@@ -49,9 +49,9 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr draggable="true">
+<!--                             <tr draggable="true">
                                 <td>
-                                    <select class="form-select muscle-filter" id="sel1" name="sellist1">
+                                    <select class="form-select muscle-filter" id="sel0" name="sellist0">
                                         <option>Biceps</option>
                                         <option>Triceps</option>
                                         <option>Pecs</option>
@@ -75,7 +75,7 @@
                                 <td>Linear progression</td>
                                 <td><a href="https://youtu.be/bEv6CCg2BC8?si=MqfxOisM7fd2ptcY">Link</a></td>
                                 <td><button class="btn btn-danger">Delete</button></td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                     <button onclick="addRowToTable()">Add exercise</button>
