@@ -1,8 +1,40 @@
+// Daten abholen, welche Übung welche Muskleln trainiert
+var exercise_dict = "";
+try {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "/get_exercises_dict", true);
+    xhr.send()
+    xhr.onload = () => {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            exercise_dict = JSON.parse(xhr.responseText);
+        }
+    }
+} catch (error) {
+    console.error('Failed to fetch exercise dict:', error);
+}
+
+// Initiales JSON mit trainierten Muskeln abhoeln
+var sets_per_muscle_dict = "";
+try {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "/get_setspermuscle", true);
+    xhr.send()
+    xhr.onload = () => {
+        if (xhr.readyState = 4 && xhr.status == 200) {
+            sets_per_muscle_dict = JSON.parse(xhr.responseText);
+        }
+    }
+} catch (error) {
+    console.error('Failed to fets muscles set dict', error);
+}
+
+
 async function addRowToTable() {
-    
-    
+
+
     getSetsPerMuscle()
-    
+
+
     // Hizufügen von einer neuen Reihe in die Workout-Table; Aufruf durch Ereignisse
     // Zugriff auf die Tabelle über ihre ID
     var table = document.getElementById("workout-table");
@@ -128,42 +160,44 @@ async function updateMusclesWorked(pElement, exercise) {
 
 // Funktion, um Sets pro Muskel des aktuellen Workouts zu laden
 async function getSetsPerMuscle() {
+    // Parsen der Workout-Tabelle auf der Seite und Übungen + Arbeitssets
+    // pro Übung definieren + bestimmen, welche Muskeln durch das aktuelle Workout angesprochen werden
     var muscles_table = document.getElementById('muscles_table');
     var workout_table = document.getElementById('workout-table');
     var exercise_json = {};
+    var sets_per_muscle_dict_work = JSON.parse(JSON.stringify(sets_per_muscle_dict));
     for (var i = 1, row; row = workout_table.rows[i]; i++) {
         try {
             var exercise = row.cells[1].querySelector(".dropdown_exercise").value;
             var reps = parseInt(row.cells[4].querySelector(".working-sets").value);
-            if (exercise_json[exercise]) {
-                exercise_json[exercise] = exercise_json[exercise] + reps;
-                console.log("Exercise exists in JSON")
-            } else {
-                exercise_json[exercise] = reps;
-            }
+            if (exercise != "-" && reps > 0) {
+                if (exercise_json[exercise]) {
+                    // wenn eine Übung doppelt vorkommt, muss man zunächst dafür sorgen, dass sie nicht bei den Muskeln worked
+                    // doppelt gezählt wird
+                    for (var j = 0, muscle; muscle = exercise_dict[exercise][j]; j++) {
+                        muscle = muscle.trim();
+                        sets_per_muscle_dict_work[muscle] = sets_per_muscle_dict_work[muscle] - exercise_json[exercise];
+                    }
+                    exercise_json[exercise] = exercise_json[exercise] + reps;
+                    for (var j = 0, muscle; muscle = exercise_dict[exercise][j]; j++) {
+                        muscle = muscle.trim();
+                        sets_per_muscle_dict_work[muscle] = sets_per_muscle_dict_work[muscle] + exercise_json[exercise];
+                    }
+                } else {
+                    exercise_json[exercise] = reps;
+                    for (var j = 0, muscle; muscle = exercise_dict[exercise][j]; j++) {
+                        muscle = muscle.trim();
+                        sets_per_muscle_dict_work[muscle] = parseInt(sets_per_muscle_dict_work[muscle]) + reps;
+                    }
 
+                }
+            }
         } catch (error) {
             console.error('Failed to fetch exercise from dropdown')
         }
     }
-    console.log(exercise_json);
-    try {
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/get_setspermuscle", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var response = JSON.parse(xhr.responseText);
-                // console.log(response);
-            }
-        };
-        var data = JSON.stringify(exercise_json);
-        xhr.send(data)
 
-    } catch (error) {
-        console.error('Failed to fetch text:', error);
-    }
-
+    // console.log(exercise_json);
 }
 
 // Funktion, um das den Link zum Tutorial-Video der Übung zu laden
@@ -229,6 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Die Zeile aus der Tabelle entfernen
             row.remove();
         }
+        getSetsPerMuscle();
     });
 
     // Trigger und Funktion, die Zeilen der Tabelle zu verschieben
@@ -259,3 +294,4 @@ document.addEventListener('DOMContentLoaded', function() {
         return a.compareDocumentPosition(b);
     }
 });
+

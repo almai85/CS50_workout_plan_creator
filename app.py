@@ -14,6 +14,7 @@ muscle_set = create_muscle_set()
 # create dictionary with sets per muscle and initialise each value with 0
 sets_per_muscle_dict = {}
 for muscle in muscle_set:
+    muscle = muscle.strip()
     sets_per_muscle_dict[muscle] = 0
 
 
@@ -50,6 +51,7 @@ def get_exercises():
 
 @app.route("/get_progression")
 def get_progression():
+    """ Return progression schemes for HTML Table"""
     progression = ["Linear periodization", "Linear Progression"]
     return jsonify(progression)
 
@@ -66,6 +68,7 @@ def get_muscles():
 
 @app.route("/get_video")
 def get_video():
+    """Return workout videos on request"""
     if request.args.get('exercise'):
 
         try:
@@ -75,19 +78,14 @@ def get_video():
     return jsonify(['https://www.google.com'])
 
 
-@app.route("/get_setspermuscle", methods=["GET", "POST"])
+@app.route("/get_setspermuscle")
 def get_sets_per_muscle():
-    if request.method == "GET":
-        return sets_per_muscle_dict
-    if request.method == "POST":
-        exercise_data = request.get_json()
-        for exercise in exercise_data:
-            muscles_worked = exercises_dict[exercise]
-            working_sets = exercise_data[exercise]
-            for muscle in muscles_worked:
-                sets_per_muscle_dict[muscle.strip()] = int(working_sets)
-        print(sets_per_muscle_dict)
-        return jsonify(sets_per_muscle_dict)
+    return sets_per_muscle_dict
+
+
+@app.route("/get_exercises_dict")
+def get_exercises_dict():
+    return jsonify(exercises_dict)
 
 
 if __name__ == "__main__":
