@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_from_directory
 from db_helper import create_muscle_set, create_exercises_dict, create_video_dict
 
 # configure Flask app
@@ -86,6 +86,12 @@ def get_sets_per_muscle():
 @app.route("/get_exercises_dict")
 def get_exercises_dict():
     return jsonify(exercises_dict)
+
+
+@app.route("/download_workout")
+def download_workout():
+    """This function generates an Excel file from the workout table and sends ist to the user"""
+    return send_from_directory("", "exercises_xls.xls", as_attachment=True)
 
 
 if __name__ == "__main__":

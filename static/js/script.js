@@ -223,6 +223,12 @@ async function loadVideoLink(aElement, exercise) {
     }
 }
 
+// Funktion, welche ein POST-Request mit der Workout-Tabelle an das Backend schickt, damit
+// dieses ein XLS daraus erstellt und es dem User schickt
+async function createWorkoutExcel() {
+    console.log("Hello World")
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Event-Listener für die Tabelle hinzufügen
