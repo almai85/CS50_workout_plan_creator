@@ -158,7 +158,7 @@ async function updateMusclesWorked(pElement, exercise) {
     }
 }
 
-// Funktion, um Sets pro Muskel des aktuellen Workouts zu laden
+// Funktion, um Sets pro Muskel des aktuellen Workouts zu laden und die muscles worked Tabelle zu befüllen
 async function getSetsPerMuscle() {
     // Parsen der Workout-Tabelle auf der Seite und Übungen + Arbeitssets
     // pro Übung definieren + bestimmen, welche Muskeln durch das aktuelle Workout angesprochen werden
@@ -197,7 +197,16 @@ async function getSetsPerMuscle() {
         }
     }
 
-    // console.log(exercise_json);
+    // Muscles worked tabelle befüllen mit erstellten Daten
+    for (i = 1, row; row = muscles_table.rows[i]; i++) {
+        try {
+            var muscle_worked = row.cells[0].innerHTML.trim();
+            var sets_worked = sets_per_muscle_dict_work[muscle_worked];
+            row.cells[1].innerHTML = sets_worked;
+        } catch (error) {
+            console.error('Failed to fetch muscles from muscles worked table')
+        }
+    }
 }
 
 // Funktion, um das den Link zum Tutorial-Video der Übung zu laden

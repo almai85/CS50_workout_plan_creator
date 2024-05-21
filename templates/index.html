@@ -5,20 +5,20 @@
         <div class="col-lg-2 border-end border-dark bg-primary">
             <div class="container pt-5">
                 <div class="container leading-text">
-                    Here is the muscles worked table
+                    <h7>Muscles worked<h7>
                 </div>
                 <div class="container">
-                    <table class="table table-hover table-stripped table-dark text-center p-0" id="muscles_table">
+                    <table class="table table-hover table-stripped text-center table-bordered table-sm table-light" id="muscles_table">
                         <thead>
                             <tr>
                                 <th>Muscle</th>
-                                <th>Sets per week</th>
+                                <th>Working sets</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for muscle in muscle_set %}
                             <tr>
-                                <td>{{muscle}}</td>
+                                <td class="muscle-worked">{{muscle}}</td>
                                 <td>{{ muscle_set[muscle] }}</td>
                             </tr>
                             {% endfor %}
@@ -31,7 +31,7 @@
         <div class="col-lg-10 bg-light ps-0">
             <div class="container pt-5 ps-0 pb-5">
                 <div class="container leading-text">
-                    This is the leading text to the workout generator table
+                    Click to add an exercise
                 </div>
                 <div class="container pt-2">
                     <table class="text-center table table-hover table-striped border small-text" id="workout-table">
@@ -49,36 +49,9 @@
                         </tr>
                         </thead>
                         <tbody>
-<!--                             <tr draggable="true">
-                                <td>
-                                    <select class="form-select muscle-filter" id="sel0" name="sellist0">
-                                        <option>Biceps</option>
-                                        <option>Triceps</option>
-                                        <option>Pecs</option>
-                                        <option>Quads</option>
-                                    </select>
-                                    </form>
-                                </td>
-                                <td>
-                                    <select class="form-select" id="sel1" name="sellist1">
-                                        <option>Bench Press</option>
-                                        <option>Deadlifts</option>
-                                        <option>Squats</option>
-                                        <option>Overhead Press</option>
-                                    </select>
-                                    </form>
-                                </td>
-                                <td>Biceps</td>
-                                <td><input class="form-control form-control-sm" type="number" autocomplete="off" placeholder="0" min="0"></td>
-                                <td><input class="form-control form-control-sm" type="number" autocomplete="off" placeholder="0" min="0"></td>
-                                <td><input class="form-control form-control-sm rep-input" type="text" autocomplete="off" placeholder="0 - 0"></td>
-                                <td>Linear progression</td>
-                                <td><a href="https://youtu.be/bEv6CCg2BC8?si=MqfxOisM7fd2ptcY">Link</a></td>
-                                <td><button class="btn btn-danger">Delete</button></td>
-                            </tr> -->
                         </tbody>
                     </table>
-                    <button onclick="addRowToTable()">Add exercise</button>
+                    <button onclick="addRowToTable()" class="btn btn-success">Add exercise</button>
                 </div>
             </div>
         </div>  

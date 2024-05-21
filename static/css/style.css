@@ -2,6 +2,11 @@
     font-size: 0.8em;
 }
 
+#muscles_table {
+    font-size: 0.8em;
+    background-color: red !important;
+}
+
 .navbar-brand {
     color: #FFFFFF;
     font-weight: 900;
@@ -36,4 +41,9 @@
     text-align: center;
     min-width: 5em;
     max-width: 7em;
+}
+
+.leading-text {
+    text-align: center;
+    font-weight: bold;
 }
