@@ -30,11 +30,6 @@ try {
 
 
 async function addRowToTable() {
-
-
-    getSetsPerMuscle()
-
-
     // Hizufügen von einer neuen Reihe in die Workout-Table; Aufruf durch Ereignisse
     // Zugriff auf die Tabelle über ihre ID
     var table = document.getElementById("workout-table");
@@ -166,7 +161,7 @@ async function getSetsPerMuscle() {
     var workout_table = document.getElementById('workout-table');
     var exercise_json = {};
     var sets_per_muscle_dict_work = JSON.parse(JSON.stringify(sets_per_muscle_dict));
-    for (var i = 1, row; row = workout_table.rows[i]; i++) {
+    for (var i = 2, row; row = workout_table.rows[i]; i++) {
         try {
             var exercise = row.cells[1].querySelector(".dropdown_exercise").value;
             var reps = parseInt(row.cells[4].querySelector(".working-sets").value);
@@ -226,9 +221,45 @@ async function loadVideoLink(aElement, exercise) {
 // Funktion, welche ein POST-Request mit der Workout-Tabelle an das Backend schickt, damit
 // dieses ein XLS daraus erstellt und es dem User schickt
 async function createWorkoutExcel() {
-    console.log("Hello World")
-}
+    const table = document.getElementById('workout-table');
+    if (!table) {
+        console.error('Tabelle mit der Klasse "workout-table" nicht gefunden.');
+        return;
+    }
+    const tableData = {};
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach((row, index) => {
+        if (index > 0) {
+            const rowData = {};
 
+            // Zellen der aktuellen Zeile auswählen
+            const cells = row.querySelectorAll('td');
+    
+            // Daten extrahieren und dem rowData-Objekt hinzufügen
+            rowData.exercise = cells[1].querySelector("select").value;
+            rowData.musclesWorked = cells[2].innerText.trim();
+            rowData.warmUpSets = cells[3].querySelector('input').value.trim();
+            rowData.workingSets = cells[4].querySelector('input').value.trim();
+            rowData.reps = cells[5].querySelector('input').value.trim();
+            rowData.progressionScheme = cells[6].querySelector('select').value.trim();
+            rowData.videoLink = cells[7].querySelector('a').href.trim();
+    
+            // rowData dem tableData-Objekt hinzufügen
+            tableData[index - 1] = rowData;
+        }
+    });
+    const jsonData = JSON.stringify(tableData);
+
+    // Daten über POST-Request an Backend senden
+    fetch('/download_workout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: jsonData
+    })
+    // window.location.replace('/download_workout');
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Event-Listener für die Tabelle hinzufügen

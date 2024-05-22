@@ -1,5 +1,7 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from db_helper import create_muscle_set, create_exercises_dict, create_video_dict
+import xlsxwriter
+import time
 
 # configure Flask app
 app = Flask(__name__)
@@ -88,12 +90,36 @@ def get_exercises_dict():
     return jsonify(exercises_dict)
 
 
-@app.route("/download_workout")
+@app.route("/download_workout", methods=["POST", "GET"])
 def download_workout():
     """This function generates an Excel file from the workout table and sends ist to the user"""
-    return send_from_directory("", "exercises_xls.xls", as_attachment=True)
+    filename = 'test_workout_2.xlsx'
+    if request.method == "POST":
+        workout_plan = request.json
+        exercises_plan = xlsxwriter.Workbook(filename)
+        workout_sheet = exercises_plan.add_worksheet()
+        row = col = 0
+        bold = exercises_plan.add_format({'bold': True, 'font_size': 16})
+        regular = exercises_plan.add_format({'font_size': 12})
+        workout_list = ["Exercise", "Muscles Worked", "Warm Up Sets", "Working Sets", "Reps", "Progression Scheme", "Tutorial Video"]
+        for element in workout_list:
+            workout_sheet.write(row, col, element, bold)
+            col += 1
+        col = 0
+        row = 1
+        for exercise_number in workout_plan:
+            for component in workout_plan[exercise_number]:
+                workout_sheet.set_column(row, col, 30)
+                workout_sheet.write(row, col, workout_plan[exercise_number][component], regular)
+                col +=1
+            row +=1
+            col = 0
+        exercises_plan.close()
+        return send_from_directory("", filename)
+    if request.method == "GET":
+        print("Hello World")
+        return send_from_directory("", filename)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
