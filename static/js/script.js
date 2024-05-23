@@ -258,7 +258,15 @@ async function createWorkoutExcel() {
         },
         body: jsonData
     })
-    // window.location.replace('/download_workout');
+    .then(response => response.json())
+    .then(data => {
+        if (data.status == '201') {
+            window.location.replace('/download_workout?filename=' + data.c);
+        } else {
+            alert ('An error occured while generationg the Excel file - please contact the administrator')
+            throw new Error('Ein Fehler beim Generieren des Excels ist aufgetreten');
+        }
+    })
 }
 
 document.addEventListener('DOMContentLoaded', function() {

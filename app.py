@@ -1,7 +1,8 @@
-from flask import Flask, render_template, jsonify, request, send_from_directory, redirect
+from flask import Flask, render_template, jsonify, request, send_from_directory, after_this_request
 from db_helper import create_muscle_set, create_exercises_dict, create_video_dict
 import xlsxwriter
-import time
+import uuid
+import os
 
 # configure Flask app
 app = Flask(__name__)
@@ -93,32 +94,56 @@ def get_exercises_dict():
 @app.route("/download_workout", methods=["POST", "GET"])
 def download_workout():
     """This function generates an Excel file from the workout table and sends ist to the user"""
-    filename = 'test_workout_2.xlsx'
+    filename = f'my_workout_{uuid.uuid4().hex[0:4]}.xlsx'
     if request.method == "POST":
         workout_plan = request.json
-        exercises_plan = xlsxwriter.Workbook(filename)
-        workout_sheet = exercises_plan.add_worksheet()
-        row = col = 0
-        bold = exercises_plan.add_format({'bold': True, 'font_size': 16})
-        regular = exercises_plan.add_format({'font_size': 12})
-        workout_list = ["Exercise", "Muscles Worked", "Warm Up Sets", "Working Sets", "Reps", "Progression Scheme", "Tutorial Video"]
-        for element in workout_list:
-            workout_sheet.write(row, col, element, bold)
-            col += 1
-        col = 0
-        row = 1
-        for exercise_number in workout_plan:
-            for component in workout_plan[exercise_number]:
-                workout_sheet.set_column(row, col, 30)
-                workout_sheet.write(row, col, workout_plan[exercise_number][component], regular)
-                col +=1
-            row +=1
+        if validate_workout_plan(workout_plan):
+            exercises_plan = xlsxwriter.Workbook(filename)
+            workout_sheet = exercises_plan.add_worksheet()
+            row = col = 0
+            bold = exercises_plan.add_format({'bold': True, 'font_size': 16})
+            regular = exercises_plan.add_format({'font_size': 12})
+            workout_list = ["Exercise", "Muscles Worked", "Warm Up Sets", "Working Sets", "Reps", "Progression Scheme", "Tutorial Video"]
+            for element in workout_list:
+                workout_sheet.write(row, col, element, bold)
+                col += 1
             col = 0
-        exercises_plan.close()
-        return redirect("/download_workout")
+            row = 1
+            for exercise_number in workout_plan:
+                for component in workout_plan[exercise_number]:
+                    workout_sheet.set_column(row, col, 30)
+                    workout_sheet.write(row, col, workout_plan[exercise_number][component], regular)
+                    col +=1
+                row +=1
+                col = 0
+            exercises_plan.close()
+            return {"c": filename, "status": 201}, 201
+        return "Failed", 406
+        
     if request.method == "GET":
-        print("Hello asf")
-        return send_from_directory("", filename)
+        try:
+            filename = request.args.get("filename")
+            @after_this_request
+            def remove_file(response):
+                try:
+                    print("Removing file")
+                    os.remove(filename)
+                except Exception as e:
+                    print(f"Error removing file {filename}: {e}")
+                return response
+            return send_from_directory("", filename)
+        except:
+            return "Nothing here", 404
+    
+
+def validate_workout_plan(workout_plan):
+    """This function validats the workout JSON provided by front-end for creating excel sheet"""
+    required_keys = ['exercise', 'musclesWorked', 'warmUpSets', 'workingSets', 'reps', 'progressionScheme', 'videoLink']
+    for key in required_keys:
+        for exercise_details in workout_plan:
+            if not key in workout_plan[exercise_details].keys():
+                return False
+    return True
 
 
 if __name__ == "__main__":
