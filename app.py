@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, send_from_directory
+from flask import Flask, render_template, jsonify, request, send_from_directory, redirect
 from db_helper import create_muscle_set, create_exercises_dict, create_video_dict
 import xlsxwriter
 import time
@@ -115,9 +115,9 @@ def download_workout():
             row +=1
             col = 0
         exercises_plan.close()
-        return send_from_directory("", filename)
+        return redirect("/download_workout")
     if request.method == "GET":
-        print("Hello World")
+        print("Hello asf")
         return send_from_directory("", filename)
 
 
