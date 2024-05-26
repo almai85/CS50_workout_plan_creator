@@ -136,6 +136,11 @@ def download_workout():
             return "Nothing here", 404
     
 
+@app.route("/construction")
+def construction():
+    return render_template("construction.html")
+
+
 def validate_workout_plan(workout_plan):
     """This function validats the workout JSON provided by front-end for creating excel sheet"""
     required_keys = ['exercise', 'musclesWorked', 'warmUpSets', 'workingSets', 'reps', 'progressionScheme', 'videoLink']
@@ -144,6 +149,7 @@ def validate_workout_plan(workout_plan):
             if not key in workout_plan[exercise_details].keys():
                 return False
     return True
+
 
 
 if __name__ == "__main__":
