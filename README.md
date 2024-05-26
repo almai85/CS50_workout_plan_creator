@@ -1,5 +1,5 @@
 # WORKOUT GENERATOR
-## Video Demo:  <URL HERE>
+## Video Demo:  https://youtu.be/m04L3kmvt-k
 ## Description:
 ### Foreword
 Hi CS50,
